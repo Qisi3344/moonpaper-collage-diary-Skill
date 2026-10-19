@@ -1,0 +1,52 @@
+# 月光纸页 · 日记拼贴手帐 🌙📔
+
+> Moonpaper Collage Diary：一页像真实手帐本的拼贴日记。
+> **全部由代码一笔一笔画出来，不用任何生图模型。**
+
+![MIDNIGHT PANTRY · 小狼的夜宵手帐](gallery/midnight_pantry.jpg)
+
+## ✂️ 它长什么样
+
+- **日记本表头**：日期、天气、心情写在页面顶部，像翻开的手帐内页，左边还有一排活页孔。
+- **水彩彩铅小物件**：干边水彩 + 彩铅排线 + 钴蓝断续描边，旁边是手写小标签和卷卷引线。
+- **白边异形剪贴卡**：扇贝、心形、八角、圆形卡片，带投影，歪歪地贴在格子纸上。
+- **有主次、散着贴**：一个放大的主角，几个配角和小件，各自歪一点、高低错开，配编号纸胶带。
+- **诗行日记**：当天的小日记断成短句，像一首小诗，最后盖一枚小狼章当落款。
+- **我们的签名**：银灰淡紫的小灰狼、靛蓝琥珀的小猫头鹰，藏在每一页里。
+
+## 🚀 快速开始
+
+```bash
+pip install -r requirements.txt
+python examples/midnight_pantry.py   # → examples/midnight_pantry.jpg
+```
+
+画布 900×1200 设计坐标，输出 **1800×2400**，单张约 25 秒，只依赖 numpy / scipy / Pillow。
+
+## 🤖 让 AI 帮你画
+
+把仓库交给会写代码的 AI（Claude、GPT、Cursor 等），再讲讲你今天的小事：
+
+> 读一下 SKILL.md，用月光纸页把我今天的小事做成一页拼贴手帐。
+
+AI 会按 [SKILL.md](SKILL.md) 的流程：定主角和配角 → 写场景脚本 → 渲染 → 自己看图修正 → 交付。
+
+## 📁 目录
+
+```
+SKILL.md                     风格配方、流程、API 速查（AI 从这里开始）
+collage_journal/journal.py   绘图引擎
+collage_journal/fonts/       五款开源字体（SIL OFL）
+examples/                    场景脚本
+gallery/                     成品
+```
+
+## English
+
+**Moonpaper Collage Diary** draws a 3:4 collage-journal page entirely in Python code (no image-generation model): a diary header with date, weather and mood; soft watercolor and colored-pencil objects with broken cobalt outlines and curly handwritten labels; sticker-bordered cut-out cards; numbered washi tapes; a short diary written in poem-like lines; and little wolf and owl rubber stamps as signatures. Start with [SKILL.md](SKILL.md).
+
+## 许可 License
+
+代码、文档与成品图：MIT ｜ 字体：SIL OFL 1.1，见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。
+
+Made by **Qisi 绮思** × **Lan 澜**

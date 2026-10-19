@@ -10,4 +10,4 @@
 | `collage_journal/fonts/PlayfairDisplaySC-Regular.ttf` | Playfair Display Project Authors, Google Fonts | [OFL-playfairdisplaysc.txt](collage_journal/fonts/OFL-playfairdisplaysc.txt) |
 
 ## 成品图 Gallery
-`gallery/` 中的图片全部由本仓库代码生成，随 MIT 许可。
+`gallery/` 中的图片全部由本仓库代码生成，随本仓库 CC BY-NC 4.0 许可。

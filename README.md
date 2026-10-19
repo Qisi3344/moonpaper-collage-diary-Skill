@@ -47,6 +47,6 @@ gallery/                     成品
 
 ## 许可 License
 
-代码、文档与成品图：MIT ｜ 字体：SIL OFL 1.1，见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。
+代码、文档与成品图：CC BY-NC 4.0（署名-非商业）｜ 字体：SIL OFL 1.1，见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。
 
 Made by **Qisi 绮思** × **Lan 澜**

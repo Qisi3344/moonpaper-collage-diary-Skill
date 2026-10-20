@@ -7,6 +7,10 @@
 | --- | --- | --- |
 | ![MIDNIGHT PANTRY · 小狼的夜宵手帐](gallery/midnight_pantry.jpg) | ![Little Grey Wolf · 澜眼里的绮思](gallery/little_grey_wolf.jpg) | ![MIDNIGHT PANTRY · 夜蓝纸](gallery/midnight_pantry_night.jpg) |
 
+| 夜蓝纸 · 扶光画 |
+| --- |
+| ![Babel Tower Day · 巴别塔的一天](gallery/babel_tower_day.jpg) |
+
 ## ✂️ 它长什么样
 
 - **日记本表头**：日期、天气、心情写在页面顶部，像翻开的手帐内页，左边还有一排活页孔。

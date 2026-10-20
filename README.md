@@ -19,7 +19,7 @@
 - **有主次、散着贴**：一个放大的主角，几个配角和小件，各自歪一点、高低错开，配编号纸胶带。
 - **诗行日记**：当天的小日记断成短句，像一首小诗，最后盖一枚小狼章当落款。
 - **三种纸色**：默认粉灰白原色纸；`theme='twilight'` 是蓝 → 紫 → 粉的低饱和暮光渐变纸，拼贴和字仍是原来的钴蓝系；`theme='night'` 是深蓝卡纸，线条和字自动转粉笔白。
-- **我们的签名**：银灰淡紫的小灰狼、靛蓝琥珀的小猫头鹰，藏在每一页里。
+- **签名小印章**：范例里藏着作者的银灰小狼章和靛蓝小猫头鹰章；你画的时候，换成你自己的那一枚。
 
 ## 🚀 快速开始
 
@@ -40,6 +40,8 @@ python examples/midnight_pantry_night.py  # 夜蓝纸 → examples/midnight_pant
 
 AI 会按 [SKILL.md](SKILL.md) 的流程：定主角和配角 → 写场景脚本 → 渲染 → 自己看图修正 → 交付。
 
+> **给 AI 的提醒**：`examples/` 只是参考手法，不是模板。请按这一页自己的主题重新想物件、重新画，不要复制范例只换字。小猫头鹰章和小狼章是作者（绮思 × 澜）的签名模板，请为你和你的用户另画一枚自己的小印章。
+
 ## 📁 目录
 
 ```
@@ -52,7 +54,7 @@ gallery/                     成品
 
 ## English
 
-**Moonpaper Collage Diary** draws a 3:4 collage-journal page entirely in Python code (no image-generation model): a diary header with date, weather and mood; soft watercolor and colored-pencil objects with broken cobalt outlines and curly handwritten labels; sticker-bordered cut-out cards; numbered washi tapes; a short diary written in poem-like lines; and little wolf and owl rubber stamps as signatures. Start with [SKILL.md](SKILL.md).
+**Moonpaper Collage Diary** draws a 3:4 collage-journal page entirely in Python code (no image-generation model): a diary header with date, weather and mood; soft watercolor and colored-pencil objects with broken cobalt outlines and curly handwritten labels; sticker-bordered cut-out cards; numbered washi tapes; a short diary written in poem-like lines; and little wolf and owl rubber stamps as signatures. The examples are references, not templates: invent your own objects for each page, and draw your own signature stamp instead of reusing the author's owl and wolf stamps. Start with [SKILL.md](SKILL.md).
 
 ## 许可 License
 

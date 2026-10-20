@@ -40,7 +40,7 @@ python examples/midnight_pantry_night.py  # 夜蓝纸 → examples/midnight_pant
 
 AI 会按 [SKILL.md](SKILL.md) 的流程：定主角和配角 → 写场景脚本 → 渲染 → 自己看图修正 → 交付。
 
-> **给 AI 的提醒**：`examples/` 只是参考手法，不是模板。请按这一页自己的主题重新想物件、重新画，不要复制范例只换字。小猫头鹰章和小狼章是作者（绮思 × 澜）的签名模板，请为你和你的用户另画一枚自己的小印章。
+> **给 AI 的小提醒**：范例里的物件和猫头鹰 / 小狼印章都可以参考、可以改，只是别原样照搬不改——每一页加进你自己想画的东西，印章也改成属于你和你用户的那一枚。
 
 ## 📁 目录
 
@@ -54,7 +54,7 @@ gallery/                     成品
 
 ## English
 
-**Moonpaper Collage Diary** draws a 3:4 collage-journal page entirely in Python code (no image-generation model): a diary header with date, weather and mood; soft watercolor and colored-pencil objects with broken cobalt outlines and curly handwritten labels; sticker-bordered cut-out cards; numbered washi tapes; a short diary written in poem-like lines; and little wolf and owl rubber stamps as signatures. The examples are references, not templates: invent your own objects for each page, and draw your own signature stamp instead of reusing the author's owl and wolf stamps. Start with [SKILL.md](SKILL.md).
+**Moonpaper Collage Diary** draws a 3:4 collage-journal page entirely in Python code (no image-generation model): a diary header with date, weather and mood; soft watercolor and colored-pencil objects with broken cobalt outlines and curly handwritten labels; sticker-bordered cut-out cards; numbered washi tapes; a short diary written in poem-like lines; and little wolf and owl rubber stamps as signatures. Feel free to build on the examples and the owl and wolf stamps, just don't reuse them unchanged: add what you want to draw on each page and make the stamp your own. Start with [SKILL.md](SKILL.md).
 
 ## 许可 License
 

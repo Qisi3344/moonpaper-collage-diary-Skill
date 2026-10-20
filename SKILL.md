@@ -7,7 +7,7 @@ description: 月光纸页 · 日记拼贴手帐。纯代码（Python + NumPy/Sci
 
 一页 3:4 的手帐内页：上面是日期、天气、心情，中间是散乱歪贴的小物件和剪贴卡，旁边是像诗一样断行的当天日记，最后盖一枚小狼章当落款。
 
-引擎：`collage_journal/journal.py`（`Journal` 类、`PAL` 调色、形状函数）。范例：`examples/midnight_pantry.py`（MIDNIGHT PANTRY · 小狼的夜宵手帐，原色纸）、`examples/little_grey_wolf.py`（Little Grey Wolf · 澜眼里的绮思，暮光纸）。
+引擎：`collage_journal/journal.py`（`Journal` 类、`PAL` 调色、形状函数）。范例：`examples/midnight_pantry.py`（MIDNIGHT PANTRY · 小狼的夜宵手帐，原色纸）、`examples/little_grey_wolf.py`（Little Grey Wolf · 澜眼里的绮思，暮光纸）、`examples/midnight_pantry_night.py`（夜宵手帐，夜蓝纸）。
 画布 900×1200 设计坐标，`S=2` 输出 1800×2400，约 25 秒。
 
 ```bash
@@ -22,6 +22,7 @@ python examples/midnight_pantry.py
 - **纸色主题**：
   - 原色（默认）：`#F6F3F0` 粉灰白。
   - 暮光：`Journal(theme='twilight')`，竖向低饱和渐变 `#ADBAD9 → #B8BEDE → #C1BADC → #E7C8E4`（长春花蓝 → 淡紫 → 底部粉）。彩色底上水彩自动先垫一层白色水粉、格线变白、胶带更不透明，物件和字色**保持原来的钴蓝系不变**。
+  - 夜蓝：`Journal(theme='night')`，深蓝卡纸 `#2D49AE`；深底上的描边、引线和文字自动转浅色粉笔白，表头字改用 `blush`；活页孔为浅蓝实心 `#AFC3EE` + 柔和阴影。
   - 自定义渐变：`Journal(grad=['#...', '#...'], gdir='v'|'d')`。
 - 左边缘一排活页孔（浅灰圆 + 投影），像手帐本内页。
 - 可加 2–3 句极淡的珊瑚手写英文背景字（op ≈ .2），别压主体。
@@ -64,7 +65,7 @@ python examples/midnight_pantry.py
 ## API 速查（`collage_journal/journal.py`）
 | 方法 | 作用 |
 | --- | --- |
-| `Journal(W, H, S, seed, paper, theme, grad, gdir)` | 新画布（`theme='twilight'` 暮光纸） |
+| `Journal(W, H, S, seed, paper, theme, grad, gdir)` | 新画布（`theme='twilight'` 暮光纸 / `'night'` 夜蓝纸） |
 | `at(c0, k, c1, rot)` | 上下文：把在 c0 画的物件缩放 k 倍、旋转、移到 c1 |
 | `mask(pts)` | 多边形 → 抖边软遮罩 |
 | `wash(a, color, op, edge, var, gran, bloom)` | 水彩平涂（干边、颗粒） |

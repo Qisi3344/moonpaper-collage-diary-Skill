@@ -2,14 +2,13 @@
 Pure numpy/scipy/PIL. Design coords (W x H), rendered at scale S.
 Look: soft watercolor + colored-pencil objects with broken cobalt outlines,
 handwritten labels with curly leaders, sticker-bordered cut-out cards,
-washi number tapes, notebook paper with a diary header, poem-line diary text,
-and little owl / wolf rubber stamps as signatures.
+washi number tapes, coral pencil sunbursts, notebook paper, library-card footer.
 """
+import os
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont
 from scipy.ndimage import gaussian_filter, gaussian_filter1d, distance_transform_edt
 
-import os
 FD = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'fonts') + os.sep
 HAND = FD + 'Caveat.ttf'            # English handwriting
 HAND_ZH = FD + 'LongCang-Regular.ttf'  # Chinese handwriting
@@ -26,7 +25,10 @@ PAL = dict(
     paper='#F6F3F0', cobalt='#2C4C9E', ink='#22306B', blue='#5F86CF', sky='#AFC8EC',
     mist='#DCE7F4', mint='#CBE5DA', coral='#E5675B', blush='#F2B9AF', butter='#F1D493',
     biscuit='#DDAE74', cocoa='#9C6A4E', berry='#5A5AA6', night='#33343D', white='#FBFAF7',
-    lilac='#A797CC', silver='#AEB0BE', wolf='#7E7A97', amber='#E3A044', owl='#3A4A8C')
+    lilac='#A797CC', silver='#AEB0BE', wolf='#7E7A97', amber='#E3A044', owl='#3A4A8C',
+    nightblue='#2D49AE', chalk='#F3F1EA')
+
+def lum(c): return float(np.dot(c, [.3, .59, .11]))
 
 # ---------- shape point generators (design coords) ----------
 def ellipse(cx, cy, rx, ry, rot=0, n=90):
@@ -77,17 +79,36 @@ def bezier(p0, p1, p2, p3=None, n=40):
 
 
 class Journal:
-    def __init__(s, W=900, H=1200, S=2, seed=1, paper='grid', base='paper'):
+    def __init__(s, W=900, H=1200, S=2, seed=1, paper='grid', base='paper', grad=None, gdir='d', theme=None):
         s.W, s.H, s.S = W, H, S; s.w, s.h = W*S, H*S
         s.rng = np.random.default_rng(seed)
         s.base = hexc(PAL.get(base, base))
         s.img = np.ones((s.h, s.w, 3)) * s.base
+        s.dark = lum(s.base) < .45   # night-blue card paper: lines turn chalk-white on the dark ground
+        THEMES = {'night': dict(base='nightblue'),
+                  'twilight': dict(grad=[(0, '#ADBAD9'), (.5, '#B8BEDE'), (.78, '#C1BADC'), (1, '#E7C8E4')], gdir='v')}
+        if theme in THEMES:
+            th = THEMES[theme]; grad = th.get('grad', grad); gdir = th.get('gdir', gdir)
+            if 'base' in th: s.base = hexc(PAL[th['base']]); s.img = np.ones((s.h, s.w, 3))*s.base; s.dark = lum(s.base) < .45
+        if grad:   # 'pillowy' / twilight card paper. grad = colours or (pos, colour) stops; gdir 'd' = 135deg, 'v' = top->bottom
+            yy, xx = np.mgrid[0:s.h, 0:s.w].astype(np.float32)
+            t = yy/s.h if gdir == 'v' else (xx/s.w + yy/s.h)/2
+            t = np.clip(t + .05*(s._field(120) - .5), 0, 1)[..., None]
+            st = grad if isinstance(grad[0], tuple) else [(k/(len(grad)-1), c) for k, c in enumerate(grad)]
+            img = np.ones((s.h, s.w, 3), np.float32)*hexc(st[0][1])
+            for (p0, c0), (p1, c1) in zip(st[:-1], st[1:]):
+                u = np.clip((t - p0)/max(p1 - p0, 1e-6), 0, 1); u = u*u*(3 - 2*u)
+                img = np.where(t >= p0, hexc(c0)*(1 - u) + hexc(c1)*u, img)
+            s.img = img.astype(np.float64)
+            s.base = max([hexc(c) for _, c in st], key=lum)
+        s.tint = (not s.dark) and lum(s.img.mean((0, 1))) < .82   # mid-tone coloured card: watercolour needs white underpaint
         s.low = [s._field(70) for _ in range(3)]
         s.mid = s._field(14); s.hi = s._field(1.4)
         s.tooth = np.clip((s.hi - .2) * 1.8, 0, 1)
         s.off = (0, 0)  # global page offset (e.g. after a top diary header)
         s.T = None   # (c0x, c0y, k, c1x, c1y): object transform, set with J.at(...)
         s._paper(paper)
+        s.paper0 = s.img.astype(np.float32)   # bare paper, for knock-outs on gradient cards
 
     # ----- object placement: draw an object in its own coords, place/scale it -----
     def at(s, c0, k=1., c1=None, rot=0):
@@ -166,25 +187,41 @@ class Journal:
         y0, y1, x0, x1 = b; A = np.clip(a[y0:y1, x0:x1]*op, 0, 1)[..., None]
         s.img[y0:y1, x0:x1] = s.img[y0:y1, x0:x1]*(1 - A) + c*A
 
+    def _darkness(s, b):
+        y0, y1, x0, x1 = b
+        L = s.img[y0:y1, x0:x1] @ np.array([.3, .59, .11])
+        return np.clip((.52 - L)/.17, 0, 1)[..., None]
+
+    def adapt(s, a, color, op=1.):
+        """on light paper = multiply. On dark ground the same stroke becomes chalk (dark colours) or opaque paint (light colours)."""
+        if not s.dark: return s.multiply(a, color, op)
+        c = s.col(color); b = s._bbox(a, 2)
+        if b is None: return
+        y0, y1, x0, x1 = b; A = np.clip(a[y0:y1, x0:x1]*op, 0, 1)[..., None]
+        D = s._darkness(b); lc = hexc(PAL['chalk']) if lum(c) < .45 else c
+        cur = s.img[y0:y1, x0:x1]
+        s.img[y0:y1, x0:x1] = (cur*(1 - A*(1 - c)))*(1 - D) + (cur*(1 - A) + lc*A)*D
+
     # ----- paper -----
     def _paper(s, kind):
         s.img *= (1 - .035*(s.hi - .5))[..., None]
         s.img *= (1 - .025*(s.low[0] - .5))[..., None]
+        gc, gm = ('#7F9BE6', s.paint) if s.dark else (('#FFFFFF', s.paint) if s.tint else ('#B9CBE6', s.multiply))
         if kind == 'grid':
             L = Image.new('L', (s.w, s.h), 0); d = ImageDraw.Draw(L); g = 30*s.S
             for x in range(0, s.w, g): d.line([(x, 0), (x, s.h)], fill=255, width=max(1, s.S))
             for y in range(0, s.h, g): d.line([(0, y), (s.w, y)], fill=255, width=max(1, s.S))
             a = np.asarray(L, np.float32)/255 * (.55 + .45*s.low[1]) * (.6 + .4*s.tooth)
-            s.multiply(a, '#B9CBE6', .55)
+            gm(a, gc, .32 if s.dark else (.3 if s.tint else .55))
         elif kind == 'dots':
             L = Image.new('L', (s.w, s.h), 0); d = ImageDraw.Draw(L); g = 26*s.S; r = 1.3*s.S
             for x in range(g//2, s.w, g):
                 for y in range(g//2, s.h, g): d.ellipse([x-r, y-r, x+r, y+r], fill=255)
-            s.multiply(np.asarray(L, np.float32)/255, '#B9CBE6', .7)
+            gm(np.asarray(L, np.float32)/255, gc, .7 if not s.dark else .4)
         elif kind == 'lined':
             L = Image.new('L', (s.w, s.h), 0); d = ImageDraw.Draw(L); g = 34*s.S
             for y in range(g*2, s.h, g): d.line([(0, y), (s.w, y)], fill=255, width=max(1, s.S))
-            s.multiply(np.asarray(L, np.float32)/255*(.6+.4*s.low[1]), '#B9CBE6', .6)
+            gm(np.asarray(L, np.float32)/255*(.6+.4*s.low[1]), gc, .6 if not s.dark else .35)
 
     # ----- watercolor -----
     def wash(s, a, color, op=.85, edge=.55, var=.35, gran=.3, soft=1.2, bloom=0):
@@ -199,11 +236,16 @@ class Journal:
         if bloom: A *= 1 - bloom*np.clip(s.low[(s.rng.integers(3))][y0:y1, x0:x1]-.6, 0, 1)*2.5
         A *= 1 - gran*(s.mid[y0:y1, x0:x1] - .5) - gran*.6*(s.hi[y0:y1, x0:x1] - .5)
         full = np.zeros((s.h, s.w), np.float32); full[y0:y1, x0:x1] = np.clip(A, 0, 1)
+        if s.dark or s.tint:   # gouache-white underpaint so watercolour reads on a dark / coloured card
+            if s.dark: D = s._darkness(b)[..., 0]
+            else: D = np.clip((.86 - s.img[y0:y1, x0:x1] @ np.array([.3, .59, .11]))/.08, 0, 1)
+            u = np.zeros_like(full); u[y0:y1, x0:x1] = np.clip(ms*min(op*1.15, 1), 0, 1)*D
+            s.paint(u, 'chalk', .96)
         s.multiply(full, color, 1)
 
     def lift(s, a, op=.85):
         """lift pigment back to paper (highlight)."""
-        s.paint(gaussian_filter(a, .8*s.S)*(.85 + .15*s.tooth), s.base*255, op)
+        s.paint(gaussian_filter(a, .8*s.S)*(.85 + .15*s.tooth), PAL['white'] if (s.dark or s.tint) else s.base*255, op)
 
     # ----- pencil -----
     def pencil(s, pts, color='cobalt', w=1.6, op=.9, closed=False, amp=.6, press=.35, gaps=0., tooth=.55, blend='mul', clip=None):
@@ -223,7 +265,7 @@ class Journal:
         a = gaussian_filter(np.asarray(L, np.float32)/255, .5*s.S)
         a *= (1 - tooth) + tooth*s.tooth
         if clip is not None: a = a*clip
-        (s.paint if blend == 'paint' else s.multiply)(a, color, op)
+        (s.paint if blend == 'paint' else s.adapt)(a, color, op)
 
     def outline(s, pts, color='cobalt', w=2.4, op=.92, gaps=.14, heavy=(1, 1), closed=True):
         """broken cobalt outline, heavier on the shadow side (heavy = light-from direction flipped)."""
@@ -259,7 +301,7 @@ class Journal:
         s.multiply(h, color, op)
 
     # ----- text -----
-    def text(s, t, xy, size, color='ink', font=HAND, op=.95, angle=0, anchor='la', wght=None, spacing=0):
+    def text(s, t, xy, size, color='ink', font=HAND, op=.95, angle=0, anchor='la', wght=None, spacing=0, blend='mul'):
         f = ImageFont.truetype(font, int(size*s.S))
         if wght:
             try: f.set_variation_by_axes([wght])
@@ -282,7 +324,7 @@ class Journal:
         else: y -= 10*s.S
         L = Image.new('L', (s.w, s.h), 0); L.paste(im, (int(x), int(y)))
         a = np.asarray(L, np.float32)/255 * (.8 + .2*s.tooth)
-        s.multiply(a, color, op)
+        (s.paint if blend == 'paint' else s.adapt)(a, color, op)   # light text on a dark card: blend='paint'
         return tw/s.S
 
     # ----- journal pieces -----
@@ -322,6 +364,7 @@ class Journal:
         pts += [(x + w/2, y + h/2), (x - w/2, y + h/2)]
         pts += [(x - w/2 + s.rng.uniform(-3, 3), y + h/2 - h*i/6) for i in range(1, 6)]
         m = s.mask(transform(pts, x, y, ang), .4, .4)
+        if s.dark or s.tint: op = max(op, .85 if s.dark else .78)   # washi on a dark / coloured card must stay light
         s.paint(m*(.85 + .15*s.mid), color, op)
         s.multiply(m*.25, color, 1)
         if text: s.text(text, (x, y), tsize, tcolor, HAND, .95, -ang, 'mm', 600)
@@ -355,13 +398,17 @@ class Journal:
         b = s._bbox(a, 2)
         if b is None: return
         lo = s.low[2]; t = np.clip((s.hi - .12)*2.2, 0, 1)
-        s.multiply(a*(.62 + .38*lo)*(.45 + .55*t), color, op)
+        s.adapt(a*(.62 + .38*lo)*(.45 + .55*t), color, op)
 
     def knock(s, a, op=.92):
-        s.paint(a, s.base*255, op)
+        b = s._bbox(a, 2)
+        if b is None: return
+        y0, y1, x0, x1 = b; A = np.clip(a[y0:y1, x0:x1]*op, 0, 1)[..., None]
+        s.img[y0:y1, x0:x1] = s.img[y0:y1, x0:x1]*(1 - A) + s.paper0[y0:y1, x0:x1]*A
 
     def wolf_stamp(s, x, y, size=1., ang=0, color='wolf', eye='lilac', text='little wolf'):
         """pure-animal little grey wolf head in a round stamp ring (draw at (x,y), radius ~36*size)."""
+        if s.dark and color == 'wolf': color = 'silver'
         with s.at((0, 0), size, (x, y), ang):
             s.pencil(ellipse(0, 0, 36, 36), color, 2.4, .85, closed=True, amp=.5, tooth=.8)
             s.pencil(ellipse(0, 0, 31, 31), color, 1.0, .6, closed=True, amp=.4, gaps=.2, tooth=.8)

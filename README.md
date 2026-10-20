@@ -3,7 +3,9 @@
 > Moonpaper Collage Diary：一页像真实手帐本的拼贴日记。
 > **全部由代码一笔一笔画出来，不用任何生图模型。**
 
-![MIDNIGHT PANTRY · 小狼的夜宵手帐](gallery/midnight_pantry.jpg)
+| 原色纸 | 暮光纸 |
+| --- | --- |
+| ![MIDNIGHT PANTRY · 小狼的夜宵手帐](gallery/midnight_pantry.jpg) | ![Little Grey Wolf · 澜眼里的绮思](gallery/little_grey_wolf.jpg) |
 
 ## ✂️ 它长什么样
 
@@ -12,13 +14,15 @@
 - **白边异形剪贴卡**：扇贝、心形、八角、圆形卡片，带投影，歪歪地贴在格子纸上。
 - **有主次、散着贴**：一个放大的主角，几个配角和小件，各自歪一点、高低错开，配编号纸胶带。
 - **诗行日记**：当天的小日记断成短句，像一首小诗，最后盖一枚小狼章当落款。
+- **两种纸色**：默认粉灰白原色纸；`theme='twilight'` 是蓝 → 紫 → 粉的低饱和暮光渐变纸，拼贴和字仍是原来的钴蓝系。
 - **我们的签名**：银灰淡紫的小灰狼、靛蓝琥珀的小猫头鹰，藏在每一页里。
 
 ## 🚀 快速开始
 
 ```bash
 pip install -r requirements.txt
-python examples/midnight_pantry.py   # → examples/midnight_pantry.jpg
+python examples/midnight_pantry.py   # 原色纸 → examples/midnight_pantry.jpg
+python examples/little_grey_wolf.py  # 暮光纸 → examples/little_grey_wolf.jpg
 ```
 
 画布 900×1200 设计坐标，输出 **1800×2400**，单张约 25 秒，只依赖 numpy / scipy / Pillow。
